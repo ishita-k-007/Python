@@ -54,28 +54,28 @@ for i in arr3:
 
 print("\n" + "2 in sorted arr3: binary search - ")
 
-def binarySearch(arr3, val, start_idx=0, exit_idx=len(arr3)):
+def binarySearch(arr3, val, start_idx, exit_idx):
     
     mid_point_idx = (start_idx + exit_idx)//2
     try:
         if arr3[mid_point_idx] == val:
-            print(val, 'occurs at index', mid_point_idx, '\n')
+            print(val, 'occurs at index', mid_point_idx)
             return mid_point_idx
 
-        elif arr3[mid_point_idx] > val:
-            binarySearch(val, start_idx, mid_point_idx)
-        
         elif arr3[mid_point_idx] < val:
-            binarySearch(val, mid_point_idx, exit_idx)
+            binarySearch(arr3, val, start_idx, mid_point_idx)
+        
+        elif arr3[mid_point_idx] > val:
+            binarySearch(arr3, val, mid_point_idx, exit_idx)
     except RecursionError:
         print('Recursion Error: maximum recursion depth exceeded. for val', val, '\n')
     finally:
         return
     
-idx = binarySearch(arr3=arr3, val=2)
-idx = binarySearch(arr3=arr3, val=-1)
-idx = binarySearch(arr3=arr3, val=7)
-
+idx = binarySearch(arr3, 2, 0, len(arr3))
+idx = binarySearch(arr3, -1, 0, len(arr3))
+idx = binarySearch(arr3, 7, 0, len(arr3))
+    
 print("2.3 in un-sorted arr4: linear search - ")
 for i in arr4:
     if i == 2.3:
@@ -249,7 +249,7 @@ def insertionBeyondIterableHashedAlgo(dict_temp, arr3=arr.array("i", [])):
     return arr3
 
 print("\nInsert a hash of elements with defined indices in a list or as single idx values - dict")
-res_arr = insertionBeyondIterableHashedAlgo({1: 1, 8: [2, 5, 7], 10: 1})
+res_arr = insertionBeyondIterableHashedAlgo({1: [1, 9], 8: [2, 5, 7], 10: 1})
 print('res_arr after insertion', res_arr)
 
 res_arr = insertionBeyondIterableHashedAlgo({-5: [0, 3], 8: 2, -7: []}, res_arr)
@@ -395,7 +395,6 @@ print('\nres_arr before deletion', res_arr)
 res_arr = deletionSubstringsIterableAlgo([(2, 4)], res_arr)
 print('res_arr after deleting indices: [(2, 4)]', res_arr)
 
-
 print('\nres_arr before deletion', arr3)
 res_arr = deletionSubstringsIterableAlgo([(2, 4), (7, 13), (7, 10)], arr3)
 print('res_arr after deleting indices: [(2, 4), (7, 13), (7, 10)]', res_arr)
@@ -418,87 +417,73 @@ print('res_arr before deletion', res_arr)
 res_arr = deletionMultipleOccurrenceLinearSearchAlgo(0, res_arr)
 print('res_arr after deleting an element 0 present in it multiple times: ', res_arr)
 
-# delete elements occurring multiple times in random array
-# delete elements repeated leaving except 1
-# delete repeat elements except at 1 particualr index
-"""
-arr1 = [1, 2, 4, 4, 4, 8, 3, 3, 5, 6, 7, 4, 4, 4, 4, 4, 6, 4, 4, 4]
-"""
-# def deleteMultipleOccurrenceBinarySearchAlgo(val, arr_x):
+# delete elements repeated leaving except the nth occurrence
+def deletionNthOccurenceAlgo(val, count, arr_x):
 
-#     idx = binarySearch(arr_x, val)
-#     if not idx:
-#         return arr_x
-
-#     arr_x = deletionSingleOccurenceAlgo(val, arr_x)
-
-# print('\nres_arr before deletion', res_arr)
-# res_arr = deletionMultipleOccurrenceBinarySearchAlgo(8, res_arr)
-# print('res_arr after deleting an element 8 present in it multiple times: ', res_arr)
-
-# print('res_arr before deletion', res_arr)
-# res_arr = deletionMultipleOccurrenceBinarySearchAlgo(0, res_arr)
-# print('res_arr after deleting an element 0 present in it multiple times: ', res_arr)
-
-# largest window with start_idx and end_idx
-def valMaxParseData(tuples_windows):
-
-    len_windows_tuple = len(tuples_windows)
-    odd_nums = even_nums = []
-    _diffs = {}
+    len_arr = len(arr_x)
     idx = 0
-    while idx < len_windows_tuple:
-        diff = tuples_windows[idx+1] - tuples_windows[idx]
-        if diff in _diffs:
-            z = len(_diffs[diff])
-            _diffs[diff][len(_diffs[diff]):] = [(tuples_windows[idx+1], tuples_windows[idx])]
-        else:
-            _diffs[diff] = [(tuples_windows[idx+1], tuples_windows[idx])]
-        idx += 2
-
-    max_data = max(sorted(_diffs))
-    return max_data, _diffs[max_data]
-
-def largestWindowSearchElementAlgo(val, arr_x):
-
-    idx = 0
-    len_arrx = len(arr_x)
-
-    window_tuples_list = []    
-    while idx < len_arrx:
+    while idx < len_arr:
         if arr_x[idx] == val:
-            jdx = idx + 1
-            count = 0
-            while jdx < len_arrx and arr_x[jdx] == val:
-                jdx += 1
-                count += 1
-            window_tuples_list[len(window_tuples_list):] = (idx, jdx)
-            idx += count
+            count -= 1
+            if count == 0:
+                arr_x = deletionSpecificIndexAlgo(val, idx, arr_x)
+                break
         idx += 1
+    return arr_x
 
-    if len(window_tuples_list) == 0:
-        return "Element doesn't exist in arr."
+arr_p = arr.array('i', [2, 3, 1, 4, 1, 1, 5])
+print('arr_p before deletion', arr_p)
+res_arr = deletionNthOccurenceAlgo(1, 2, arr_p)
+print('res_arr after deleting an element 1 present in it at 2nd count: ', res_arr)
 
-    if len(window_tuples_list) == 2:
-        return window_tuples_list[1] - window_tuples_list[0]
+# delete repeat elements except at 1 particualr index
+def deletionExceptNthOccurenceAlgo(val, count, arr_x):
 
-    max_val, windows_list_groups = valMaxParseData(window_tuples_list)
+    idx = num_count = 0
+    while idx < len(arr_x):
+        if arr_x[idx] == val:
+            num_count += 1
+            if num_count != count:
+                arr_x = deletionSpecificIndexAlgo(val, idx, arr_x)
+        idx += 1
+    return arr_x[:len(arr_x)-num_count + 1]
 
-    smallest_idx_window = windows_list_groups[0] 
-    largest_idx_window = windows_list_groups[-1]
+print('arr_p before deletion', res_arr)
+res_arr = deletionExceptNthOccurenceAlgo(1, 2, arr_p)
+print('res_arr_p after deleting an element 1 at all occurences except 2: ', res_arr)
 
-    return {
-        'window size': max_val,
-        'smallest_idx': smallest_idx_window,
-        'largest_idx': largest_idx_window
-    }
+# delete first n occurences of an element
+def deletionNOccurencesAlgo(val, count, arr_res_p):
 
-print("\n" + "Largest window search for element")
-arr_x = arr.array("i", [1, 2, 4, 4, 4, 8, 3, 3, 5, 6, 7, 4, 4, 4, 4, 4, 6, 8, 4, 4, 4, 4, 4])
-print('arr_x: ', arr_x)
-res_arr = largestWindowSearchElementAlgo(-5, arr_x)
-print('largest window search element algo for arr_x: ', res_arr)
+    idx = 0
+    while idx < len(arr_res_p) and count > 0:
+        if arr_res_p[idx] == val:
+            if count >= 0:
+                arr_res_p = deletionSpecificIndexAlgo(val, idx, arr_res_p)
+                count -= 1
+                idx -= 1
+        idx += 1
+    return arr_res_p[:len(arr_res_p)]
 
-print('arr_x: ', arr_x)
-res_arr = largestWindowSearchElementAlgo(4, arr_x)
-print('largest window search element algo for arr_x: ', res_arr)
+res_arr_p = arr.array("i", [1, 2, 2, 2, 4, 5, 6, 6, 2, 2, 2, 4, 5])
+print('arr_p before deletion', res_arr_p)
+res_arr = deletionNOccurencesAlgo(2, 3, res_arr_p)
+print('res_arr after deleting an element 1 at all occurences except 2: ', res_arr)
+
+# delete except first n occurences of an element
+def deletionExceptNOccurencesAlgo(val, count, arr_res_p):
+
+    idx = 0
+    while idx < len(arr_res_p):
+        if arr_res_p[idx] == val:
+            if count <= 0:
+                arr_res_p = deletionSpecificIndexAlgo(val, idx, arr_res_p)
+                idx -= 1
+            count -= 1
+        idx += 1
+    return arr_res_p[:len(arr_res_p)]
+
+res_arr_p = arr.array("i", [1, 2, 2, 2, 4, 5, 6, 6, 2, 8, 2, 2, 4, 5])
+print('arr_p before deletion', res_arr_p)
+res_arr = deletionExceptNOccurencesAlgo(2, 3, res_arr_p)
+print('res_arr after deleting an element 1 at all occurences except 2: ', res_arr)
